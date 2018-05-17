@@ -65,10 +65,10 @@ public class Solver extends Object {
 	 */
 	public static void answer() {
 		Solver.countEachValue();
-
 		Solver.decideNumber();
-
 		Solver.submit();
+
+		return;
 	}
 
 	/**
@@ -93,15 +93,15 @@ public class Solver extends Object {
 	 * 計算量自体はO(1/2 * N * M * MlogM)
 	 */
 	private static void decideNumber() {
-		for(int i = 0;i < zigen;i++){
+		for(int i = 0;i < Solver.zigen;i++){
 			Solver.sortFrequency();
 
 			int j = 0;
-			for(Map.Entry<Integer, Integer> entry : frequency.entrySet()){
-				testAnswer[i] = entry.getKey();
+			for(Map.Entry<Integer, Integer> entry : Solver.frequency.entrySet()){
+				Solver.testAnswer[i] = entry.getKey();
 				if(Solver.evaluateSecond(i, j)) {
-					frequency.put(testAnswer[i], frequency.get(testAnswer[i]) - 1);
-					if(frequency.get(testAnswer[i]) == 0) frequency.remove(testAnswer[i]);
+					Solver.frequency.put(Solver.testAnswer[i], Solver.frequency.get(Solver.testAnswer[i]) - 1);
+					if(Solver.frequency.get(Solver.testAnswer[i]) == 0) frequency.remove(testAnswer[i]);
 					break;
 				}
 				j++;
@@ -119,9 +119,9 @@ public class Solver extends Object {
 	 */
 	private static void evaluateFirst(int i) {
 		Solver.submission++;
-		hint = MasterMind.evaluate(testAnswer);
-		if(hint[0]!=0) frequency.put(i, hint[0]);
-		if(hint[0] == zigen) Solver.submit();
+		Solver.hint = MasterMind.evaluate(Solver.testAnswer);
+		if(Solver.hint[0]!=0) Solver.frequency.put(i, Solver.hint[0]);
+		if(Solver.hint[0] == Solver.zigen) Solver.submit();
 
 		return;
 	}
@@ -135,22 +135,22 @@ public class Solver extends Object {
 	 */
 	private static boolean evaluateSecond(int digit, int index) {
 		Solver.submission++;
-		hint = MasterMind.evaluate(testAnswer);
-		if(hint[0] == zigen) Solver.submit();
+		Solver.hint = MasterMind.evaluate(Solver.testAnswer);
+		if(Solver.hint[0] == Solver.zigen) Solver.submit();
 		if(index > 0){
 			if(index == 1){
-				if(prevHit > hint[0]){
-					testAnswer[digit] = prevDigit;
+				if(Solver.prevHit > Solver.hint[0]){
+					Solver.testAnswer[digit] = Solver.prevDigit;
 					return true;
 				}
 			}
-			if(prevHit < hint[0]){
+			if(Solver.prevHit < Solver.hint[0]){
 				return true;
 			}
 		}
 
-		prevHit = hint[0];
-		prevDigit = testAnswer[digit];
+		Solver.prevHit = Solver.hint[0];
+		Solver.prevDigit = Solver.testAnswer[digit];
 		return false;
 	}
 
@@ -161,7 +161,7 @@ public class Solver extends Object {
 	 * ポリモーフィズムを失うあまりよくないプログラムだがLinkedHashMapに指定している
 	 */
 	private static void sortFrequency() {
-		frequency = frequency.entrySet().stream()
+		Solver.frequency = Solver.frequency.entrySet().stream()
 		.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
 		.collect(Collectors.toMap(
 			e -> e.getKey(),
@@ -178,8 +178,8 @@ public class Solver extends Object {
 	 * DEBUG変数がtrueだった場合、それまでに提出した回数を標準エラー出力に出力する
 	 */
 	private static void submit() {
-		if(DEBUG) System.err.println("submission = " +  submission);
-		MasterMind.submit(testAnswer);
+		if(DEBUG) System.err.println("submission = " +  Solver.submission);
+		MasterMind.submit(Solver.testAnswer);
 
 		return;
 	}
