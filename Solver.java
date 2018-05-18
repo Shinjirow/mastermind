@@ -13,7 +13,7 @@ public class Solver extends Object {
     /**
      * デバッグ用変数
      */
-    private static boolean DEBUG = true;
+    private static boolean DEBUG = false;
 
     /**
      * 回答のチェック回数の上限値
@@ -76,10 +76,17 @@ public class Solver extends Object {
      * 全てi(0 <= i < 10)で埋めて提出しヒットの数を測る
      */
     private static void countEachValue() {
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 9; i++) {
             Arrays.fill(Solver.testAnswer, i);
             Solver.evaluateFirst(i);
         }
+
+        int sum = 0;
+        for(Map.Entry<Integer, Integer> entry : Solver.frequency.entrySet()){
+            sum += entry.getValue();
+        }
+        // if(DEBUG) System.err.println("nokori = " + (zigen - sum));
+        if(zigen - sum > 0) Solver.frequency.put(9, zigen - sum);
 
         return;
     }
@@ -93,6 +100,14 @@ public class Solver extends Object {
      * 計算量自体はO(1/2 * N * M * MlogM)
      */
     private static void decideNumber() {
+        Solver.sortFrequency();
+        for(Map.Entry<Integer, Integer> entry : Solver.frequency.entrySet()){
+            Arrays.fill(Solver.testAnswer, entry.getKey());
+            Solver.prevHit = entry.getValue();
+            Solver.prevDigit = entry.getKey();
+            break;
+        }
+
         for (int i = 0; i < Solver.zigen; i++) {
             Solver.sortFrequency();
 
@@ -101,6 +116,7 @@ public class Solver extends Object {
                 if(Solver.testAnswer[i]==entry.getKey()) continue;
                 Solver.testAnswer[i] = entry.getKey();
                 if (Solver.evaluateSecond(i, j)) {
+                    // if(DEBUG) System.err.println(Solver.testAnswer[i]);
                     Solver.frequency.put(Solver.testAnswer[i], Solver.frequency.get(Solver.testAnswer[i]) - 1);
                     if (Solver.frequency.get(Solver.testAnswer[i]) == 0) frequency.remove(testAnswer[i]);
                     break;
@@ -139,6 +155,12 @@ public class Solver extends Object {
      * @return その桁の値がわかった場合true
      */
     private static boolean evaluateSecond(int digit, int index) {
+        // if(DEBUG) {
+        //     for(int num : testAnswer){
+        //         System.err.print(num);
+        //     }System.err.println();
+        // }
+
         Solver.submission++;
 		Solver.hint = MasterMind.evaluate(Solver.testAnswer);
 		boolean find = false;
@@ -162,11 +184,17 @@ public class Solver extends Object {
      * ポリモーフィズムを失うあまりよくないプログラムだがLinkedHashMapに指定している
      */
     private static void sortFrequency() {
+        
         Solver.frequency = Solver.frequency.entrySet()
                                            .stream()
                                            .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
                                            .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue(), (s, a) -> a, LinkedHashMap::new));
 
+        // if(DEBUG) {
+        //     for(Map.Entry<Integer, Integer> entry:Solver.frequency.entrySet()){
+        //         System.err.print(entry + ", ");
+        //     }System.err.println();
+        // }
         return;
     }
 
