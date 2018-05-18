@@ -6,6 +6,7 @@ ERROR = /dev/null
 DIR1 = reidai01
 DIR2 = reidai02
 DIR3 = reidai03
+DIR4 = reidai04
 
 .SILENT : 
 all : 
@@ -18,4 +19,8 @@ all :
 	\echo ;\echo ${DIR3}
 	cp ./${SOURCE} ${DIR3}
 	(\cd ${DIR3}; ${JAVAC} ${SOURCE} && ${JAVA} ${MAIN}; \rm ${SOURCE})
+	\echo ;\echo ${DIR4}
+	cp ./${SOURCE} ${DIR4}
+	(\cd ${DIR4}; ${JAVAC} ${SOURCE} && ${JAVA} ${MAIN}; \rm ${SOURCE})
 	\echo
+
