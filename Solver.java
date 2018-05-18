@@ -98,6 +98,7 @@ public class Solver extends Object {
 
             int j = 0;
             for (Map.Entry<Integer, Integer> entry : Solver.frequency.entrySet()) {
+                if(Solver.testAnswer[i]==entry.getKey()) continue;
                 Solver.testAnswer[i] = entry.getKey();
                 if (Solver.evaluateSecond(i, j)) {
                     Solver.frequency.put(Solver.testAnswer[i], Solver.frequency.get(Solver.testAnswer[i]) - 1);
@@ -124,6 +125,8 @@ public class Solver extends Object {
         if (Solver.hint[0] != 0) Solver.frequency.put(i, Solver.hint[0]);
         if (Solver.hint[0] == Solver.zigen) Solver.submit();
 
+		Solver.prevHit = Solver.hint[0];
+        Solver.prevDigit = Solver.testAnswer[0];
         return;
     }
 
@@ -137,19 +140,19 @@ public class Solver extends Object {
      */
     private static boolean evaluateSecond(int digit, int index) {
         Solver.submission++;
-        Solver.hint = MasterMind.evaluate(Solver.testAnswer);
+		Solver.hint = MasterMind.evaluate(Solver.testAnswer);
+		boolean find = false;
         if (Solver.hint[0] == Solver.zigen) Solver.submit();
-        if (index > 0) {
-            if (index == 1 && Solver.prevHit > Solver.hint[0]) {
-                Solver.testAnswer[digit] = Solver.prevDigit;
-                return true;
-            }
-            if (Solver.prevHit < Solver.hint[0]) return true;
+        if (Solver.prevHit > Solver.hint[0]) {
+            Solver.testAnswer[digit] = Solver.prevDigit;
+            return true;
         }
+        if (Solver.prevHit < Solver.hint[0]) find = true;
 
         Solver.prevHit = Solver.hint[0];
-        Solver.prevDigit = Solver.testAnswer[digit];
-        return false;
+        Solver.prevDigit = (find) ? Solver.testAnswer[digit+1] : Solver.testAnswer[digit];
+        
+        return find;
     }
 
     /**
